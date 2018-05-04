@@ -1,9 +1,10 @@
 __author__ = 'CheD'
 
+from math import hypot
 import unittest
 
 __all__ = (
-    'Point'
+    'Point',
 )
 
 
@@ -45,14 +46,8 @@ class Point:
     def __ne__(self, other):
         return not self == other
 
-    def __repr__(self):
-        return "class Point"
-
     def __str__(self):
         return f'({self.x}, {self.y})'
-
-    def __repr__(self):
-        return f'Point:(x = {self.x}, y = {self.y})'
 
     @property
     def x(self):
@@ -77,7 +72,6 @@ class Point:
         :param other: type of arg is Point
         :return: float in the form ("%.2f")
         """
-        from math import hypot
         return round(hypot(self.x - other.x, self.y - other.y), 2)
 
 

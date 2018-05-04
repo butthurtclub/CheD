@@ -8,11 +8,7 @@ __all__ = (
 
 
 class UnitIsDead(Exception):
-    def __init__(self, message):
-        self.message = message
-
-    def __str__(self):
-        return self.message
+    pass
 
 
 class Unit:
@@ -56,12 +52,9 @@ class Unit:
         Check. Is unit still alive?
 
         :raises: UnitIsDead: On self._hit_points == 0
-        :return: None
         """
         if self._hit_points == 0:
             raise UnitIsDead('Unit is dead!')
-        else:
-            return None
 
     def __str__(self):
         return f'Unit name: {self.name};\nUnit hp: {self.hit_points};\nUnit damage: {self.damage};\n'
@@ -82,46 +75,37 @@ class Unit:
     def damage(self):
         return self._damage
 
-    @hit_points.setter
-    def hit_points(self, hp):
-        self._hit_points = hp
-
     def take_damage(self, dmg):
         """
         Unit take damage. (decrease hit_points)
 
         :param dmg: Damage of unit(attacker). Possible value: integer
-        :return: None
         """
         self._ensure_is_alive()
 
-        self.hit_points -= dmg
+        self._hit_points -= dmg
 
         if self.hit_points <= 0:
-            self.hit_points = 0
-            pass
+            self._hit_points = 0
 
     def add_hit_points(self, hp):
         """
         Increase hit_points.
 
         :param hp: Possible value: integer, float
-        :return:None
         """
         self._ensure_is_alive()
 
-        self.hit_points += hp
+        self._hit_points += hp
 
         if self.hit_points > self.hit_points_limit:
-            self.hit_points = self.hit_points_limit
-            pass
+            self._hit_points = self.hit_points_limit
 
     def attack(self, other):
         """
         The attack method. Self unit attack other unit
 
         :param other: Will be attacked by self.unit and counter attack him. Possible value: class Unit
-        :return: None
         """
         if other is not self:
             other.take_damage(self.damage)
@@ -132,7 +116,6 @@ class Unit:
         The counter attack method.
 
         :param other: Will hit the other unit with half of damage power.
-        :return: None
         """
         other.take_damage(self.damage/2)
 

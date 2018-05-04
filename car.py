@@ -8,20 +8,18 @@ __all__ = (
 )
 
 
-class OutOfFuel(Exception):
-    def __init__(self, message):
-        self.message = message
-
-    def __str__(self):
-        return self.message
+class FuelException(Exception):
+    """Base class for fuel exceptions"""
+    pass
 
 
-class ToMuchFuel(Exception):
-    def __init__(self, message):
-        self.message = message
+class OutOfFuel(FuelException):
+    """The tank is empty.(fuel_amount == 0)"""
+    pass
 
-    def __str__(self):
-        return self.message
+
+class ToMuchFuel(FuelException):
+    """The tank is full.(fuel_amount == fuel_capacity)"""
 
 
 class Car:
@@ -44,7 +42,6 @@ class Car:
     Max fuel:60
     Fuel amount: 51.52
     """
-
     def __init__(self, fuel_capacity=60, fuel_consumption=0.6,
                  location=point.Point(), model='Mercedes'):
         """
@@ -55,7 +52,6 @@ class Car:
         :param location: Possible values: Point()
         :param model: Possible values: string
         """
-
         self._location = location
         self._fuel_amount = fuel_capacity
         self._model = model
@@ -86,29 +82,20 @@ class Car:
     def model(self):
         return self._model
 
-    @location.setter
-    def location(self, other):
-        self._location = other
-
-    @fuel_amount.setter
-    def fuel_amount(self, other):
-        self._fuel_amount = other
-
     def refill(self, fuel):
         """
         Method that refills your car.
 
-        :param fuel:
+        :param fuel: Fuel need to add
         :raises ToMuchFuel: On refilling already full tank
-        :return: None
         """
         if self.fuel_amount == self.fuel_capacity:
             raise ToMuchFuel('You already have full tank!')
 
-        self.fuel_amount += fuel
+        self._fuel_amount += fuel
 
         if self.fuel_amount > self.fuel_capacity:
-            self.fuel_amount = self.fuel_capacity
+            self._fuel_amount = self.fuel_capacity
 
     def drive(self, destination=None, **kwargs):
         """
@@ -117,9 +104,7 @@ class Car:
         :param destination: Possible values: Point().
         :param kwargs: Destination in form  x, y.
         :raises OutOfFuel: On not enough fuel
-        :return:None
         """
-
         destination = destination or point.Point(**kwargs)
 
         trip_distance = self.location.distance(destination)
@@ -128,8 +113,8 @@ class Car:
         if fuel_need > self.fuel_amount:
             raise OutOfFuel('Not enough fuel! Please, refill your car.')
 
-        self.location = destination
-        self.fuel_amount -= fuel_need
+        self._location = destination
+        self._fuel_amount -= fuel_need
 
 
 class TestCar(unittest.TestCase):
@@ -173,11 +158,7 @@ class TestCar(unittest.TestCase):
         self.assertEqual(car.fuel_consumption, 0.6)
 
     def test_ride_without_fuel(self):
-        car = Car()
-
-        self.assertEqual(car.fuel_amount, 60)
-
-        car.fuel_amount -= 60
+        car = Car(0, 0.6, point.Point(), 'Mercedes')
 
         self.assertEqual(car.fuel_amount, 0)
 
